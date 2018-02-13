@@ -1,6 +1,8 @@
 package com.github.msabatini;
 
+import com.github.msabatini.domain.usecase.MoneyTransfer;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.net.URI;
@@ -21,7 +23,16 @@ public class Application
   {
     return createHttpServer(URI.create(BASE_URI),
                             new ResourceConfig()
-                              //.register(new Configuration())
+                              .register(new Configuration())
                               .packages(RESOURCE_PACKAGE));
+  }
+
+  static class Configuration extends AbstractBinder
+  {
+    @Override protected void configure()
+    {
+      MoneyTransfer transferService = new MoneyTransfer();
+      bind(transferService).to(MoneyTransfer.class);
+    }
   }
 }

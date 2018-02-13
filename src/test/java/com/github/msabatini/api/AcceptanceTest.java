@@ -63,8 +63,8 @@ public class AcceptanceTest
                          .withAccountFrom("notExistent")
                          .build()));
 
-    assertThat(response.getStatus(), is(404));
     assertThat(response.readEntity(String.class), is("Account with id notExistent not found"));
+    assertThat(response.getStatus(), is(404));
   }
 
   @Test
@@ -80,8 +80,8 @@ public class AcceptanceTest
                          .withAmount("100")
                          .build()));
 
-    assertThat(response.getStatus(), is(400));
     assertThat(response.readEntity(String.class), containsString("Balance insufficient"));
+    assertThat(response.getStatus(), is(400));
   }
 
   @Test
@@ -97,8 +97,8 @@ public class AcceptanceTest
                          .withAmount("-1")
                          .build()));
 
-    assertThat(response.getStatus(), is(500));
     assertThat(response.readEntity(String.class), is("Invalid value EUR -1. It has to be positive"));
+    assertThat(response.getStatus(), is(500));
   }
 
 }

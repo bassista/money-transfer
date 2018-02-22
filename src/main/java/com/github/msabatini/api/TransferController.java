@@ -28,6 +28,7 @@ public class TransferController
   @Consumes(APPLICATION_JSON)
   public Response transfer(@PathParam("customerId") String customerId, TransferRequestDTO dto)
   {
-    return accepted().build();
+    String response = moneyTransfer.execute();
+    return accepted(response).build();
   }
 }

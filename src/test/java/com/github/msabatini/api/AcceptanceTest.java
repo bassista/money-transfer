@@ -54,8 +54,8 @@ public class AcceptanceTest
                                              .withAccountTo(GBP)
                                              .build()));
 
-    assertThat(response.getStatus(), is(202));
     assertThat(response.readEntity(String.class), is("Transfer is accepted"));
+    assertThat(response.getStatus(), is(202));
   }
 
   @Test
@@ -68,8 +68,8 @@ public class AcceptanceTest
                                              .withAccountFrom(NOT_EXISTENT_CURRENCY)
                                              .build()));
 
-    assertThat(response.getStatus(), is(404));
     assertThat(response.readEntity(String.class), is("Account with id notExistent not found"));
+    assertThat(response.getStatus(), is(404));
   }
 
   @Test
@@ -83,8 +83,8 @@ public class AcceptanceTest
                                                            .withAmount(HUGE_AMOUNT)
                                                            .build()));
 
-    assertThat(response.getStatus(), is(400));
     assertThat(response.readEntity(String.class), containsString("Balance insufficient"));
+    assertThat(response.getStatus(), is(400));
   }
 
   @Test
@@ -98,8 +98,7 @@ public class AcceptanceTest
                                                            .withAmount(INVALID_AMOUNT)
                                                            .build()));
 
-    assertThat(response.getStatus(), is(500));
     assertThat(response.readEntity(String.class), is("Invalid value EUR -1. It has to be positive"));
+    assertThat(response.getStatus(), is(500));
   }
-
 }

@@ -23,7 +23,7 @@ public class AcceptanceTest
   private static final String CUSTOMER_ID_VALUE = "customer1";
   private static final String EUR = "EUR";
   private static final String GBP = "GBP";
-  private static final String NOT_EXISTENT_CURRENCY = "notExistent";
+  private static final String NOT_FOUND = "notExistent";
   private static final String INVALID_AMOUNT = "-1";
   private static final String HUGE_AMOUNT = "100";
 
@@ -44,59 +44,66 @@ public class AcceptanceTest
   }
 
   @Test
-  public void transferAccepted()
+  public void transferIsAccepted()
   {
+    TransferRequestDTO request = aTransferRequest().withAccountFrom(EUR)
+                                                   .withAccountTo(GBP)
+                                                   .withAmount("20")
+                                                   .build();
+
     Response response = target.path(TRANSFER_PATH)
                               .resolveTemplate(CUSTOMER_ID_PARAMETER, CUSTOMER_ID_VALUE)
                               .request()
-                              .post(json(aTransferRequest()
-                                             .withAccountFrom(EUR)
-                                             .withAccountTo(GBP)
-                                             .build()));
+                              .post(json(request));
 
     assertThat(response.readEntity(String.class), is("Transfer is accepted"));
     assertThat(response.getStatus(), is(202));
   }
 
   @Test
-  public void accountNotFound()
+  public void accountIsNotFound()
   {
+    TransferRequestDTO request = aTransferRequest().withAccountFrom(NOT_FOUND)
+                                                   .build();
+
     Response response = target.path(TRANSFER_PATH)
                               .resolveTemplate(CUSTOMER_ID_PARAMETER, CUSTOMER_ID_VALUE)
                               .request()
-                              .post(json(aTransferRequest()
-                                             .withAccountFrom(NOT_EXISTENT_CURRENCY)
-                                             .build()));
+                              .post(json(request));
 
     assertThat(response.readEntity(String.class), is("Account with id notExistent not found"));
     assertThat(response.getStatus(), is(404));
   }
 
   @Test
-  public void insufficientBalance()
+  public void balanceIsInsufficient()
   {
+    TransferRequestDTO request = aTransferRequest().withAccountFrom(EUR)
+                                                   .withAccountTo(GBP)
+                                                   .withAmount(HUGE_AMOUNT)
+                                                   .build();
+
     Response response = target.path(TRANSFER_PATH)
                               .resolveTemplate(CUSTOMER_ID_PARAMETER, CUSTOMER_ID_VALUE)
                               .request()
-                              .post(json(aTransferRequest().withAccountFrom(EUR)
-                                                           .withAccountTo(GBP)
-                                                           .withAmount(HUGE_AMOUNT)
-                                                           .build()));
+                              .post(json(request));
 
     assertThat(response.readEntity(String.class), containsString("Balance insufficient"));
     assertThat(response.getStatus(), is(400));
   }
 
   @Test
-  public void aWrongRequest()
+  public void requestIsWrong()
   {
+    TransferRequestDTO request = aTransferRequest().withAccountFrom(EUR)
+                                                   .withAccountTo(GBP)
+                                                   .withAmount(INVALID_AMOUNT)
+                                                   .build();
+
     Response response = target.path(TRANSFER_PATH)
                               .resolveTemplate(CUSTOMER_ID_PARAMETER, CUSTOMER_ID_VALUE)
                               .request()
-                              .post(json(aTransferRequest().withAccountFrom(EUR)
-                                                           .withAccountTo(GBP)
-                                                           .withAmount(INVALID_AMOUNT)
-                                                           .build()));
+                              .post(json(request));
 
     assertThat(response.readEntity(String.class), is("Invalid value EUR -1. It has to be positive"));
     assertThat(response.getStatus(), is(500));
